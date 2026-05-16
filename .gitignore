@@ -1,0 +1,12 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+logs/
+runtime/
+mediaip_storage/
+
+train/models/
+tb_logs/
