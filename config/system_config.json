@@ -1,0 +1,15 @@
+{
+  "space_limits": {
+    "max_observation_dim": 64,
+    "max_action_dim": 64,
+    "max_signal_count": 32
+  },
+  "runtime_paths": {
+    "models_dir": "runtime/models",
+    "mediaip_checkout_dir": "runtime/mediaip_storage"
+  },
+  "inference": {
+    "step_interval_seconds": 0.05,
+    "deterministic": true
+  }
+}
