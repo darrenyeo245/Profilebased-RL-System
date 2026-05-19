@@ -136,7 +136,8 @@ class InferenceManager:
             values.append(signal_values)
         return np.concatenate(values).astype(np.float32)
 
-    def _read_signal(self, signal: SignalConfig, osc_interface: Any) -> np.ndarray:
+    @staticmethod
+    def _read_signal(signal: SignalConfig, osc_interface: Any) -> np.ndarray:
         value = osc_interface.get_signal(
             signal.address,
             signal.size,
@@ -149,16 +150,17 @@ class InferenceManager:
             )
         return np.clip(value, signal.low_values(), signal.high_values()).astype(np.float32)
 
-    def _normalize_action(self, action: np.ndarray, pattern: PatternConfig) -> np.ndarray:
+    @staticmethod
+    def _normalize_action(action: np.ndarray, pattern: PatternConfig) -> np.ndarray:
         action = np.asarray(action, dtype=np.float32).reshape(-1)
         expected_size = pattern.action_dim
         if action.shape != (expected_size,):
             raise ValueError(f"Inference action expected shape ({expected_size},), got {action.shape}")
         return np.clip(action, pattern.action_low(), pattern.action_high()).astype(np.float32)
 
+    @staticmethod
     def _send_action(
-        self,
-        action: np.ndarray,
+            action: np.ndarray,
         pattern: PatternConfig,
         osc_interface: Any,
     ) -> None:
@@ -168,7 +170,8 @@ class InferenceManager:
             offset += signal.size
             osc_interface.send_signal(signal.address, values)
 
-    def _validate_model_spaces(self, model: Any, pattern: PatternConfig) -> None:
+    @staticmethod
+    def _validate_model_spaces(model: Any, pattern: PatternConfig) -> None:
         observation_shape = getattr(model.observation_space, "shape", None)
         action_shape = getattr(model.action_space, "shape", None)
         if observation_shape != (pattern.observation_dim,):

@@ -21,7 +21,6 @@ class OSCInterfaceProtocol(Protocol):
 
 
 class MediaEnv(gym.Env):
-    metadata = {"render_modes": []}
 
     def __init__(
         self,
