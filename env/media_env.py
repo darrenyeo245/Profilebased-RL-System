@@ -12,7 +12,6 @@ class OSCInterfaceProtocol(Protocol):
         address: str,
         size: int,
         wait_for_new: bool = False,
-        timeout: float | None = None,
     ) -> np.ndarray:
         ...
 
@@ -28,14 +27,12 @@ class MediaEnv(gym.Env):
         pattern_config: PatternConfig,
         reward_function: RewardFunctionProtocol,
         max_steps: int,
-        observation_timeout: float | None = 1.0,
     ):
         super().__init__()
         self.osc = osc_interface
         self.pattern_config = pattern_config
         self.reward_function = reward_function
         self.max_steps = int(max_steps)
-        self.observation_timeout = observation_timeout
 
         self.observation_space = gym.spaces.Box(
             low=pattern_config.observation_low(),
@@ -129,7 +126,6 @@ class MediaEnv(gym.Env):
             signal.address,
             signal.size,
             wait_for_new=wait_for_new,
-            timeout=self.observation_timeout,
         )
         value = np.asarray(value, dtype=np.float32)
         if value.shape != (signal.size,):
