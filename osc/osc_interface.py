@@ -114,6 +114,9 @@ class OSCInterface:
         args = self._strip_dispatcher_args(args)
         self._log_event("recv", address, args)
 
+        if address in {"/rl/status/response", "/rl/error"}:
+            return
+
         try:
             setup_id = self._match_setup_address(address)
             model_id = self._match_save_model_address(address)
