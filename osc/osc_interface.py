@@ -114,20 +114,14 @@ class OSCInterface:
         self.server_thread = None
         self._log_event("listener_stopped", "/", [RASPI_HOST, RASPI_PORT])
 
-    def default_handler(self, client_address, address, *args):
+    def default_handler(self, client_address: tuple[str, int], address: str, *args: Any) -> None:
         args = self._strip_dispatcher_args(args)
-
-        if address in self._mapped_action_addresses:
-            self._log_event("recv_action_echo_ignored", address, args)
-            return
-
         if (
-                self._ignore_self_messages
-                and client_address
-                and client_address[0] in self._local_ip_addresses
-                and not address.startswith("/rl/")
+            self._ignore_self_messages
+            and client_address
+            and client_address[0] in self._local_ip_addresses
+            and not address.startswith("/rl/")
         ):
-            self._log_event("recv_self_ignored", address, args)
             return
 
         self._log_event("recv", address, args)
