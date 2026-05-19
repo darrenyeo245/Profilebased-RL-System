@@ -98,6 +98,7 @@ class MediaEnv(gym.Env):
         super().reset(seed=seed)
         self._step_count = 0
         self.reward_function.reset()
+        self._clear_observation_pending()
         self._send_reset()
 
         observation, named_observations = self._read_observation(wait_for_new=True)
@@ -160,6 +161,14 @@ class MediaEnv(gym.Env):
         send_reset = getattr(self.osc, "send_reset", None)
         if callable(send_reset):
             send_reset(self.pattern_config)
+
+    def _clear_observation_pending(self) -> None:
+        clear_signal_pending = getattr(self.osc, "clear_signal_pending", None)
+        if not callable(clear_signal_pending):
+            return
+
+        for signal in self.pattern_config.observations:
+            clear_signal_pending(signal.address)
 
 def _to_serializable_dict(values: dict[str, np.ndarray]) -> dict[str, list[float]]:
     return {name: value.astype(float).tolist() for name, value in values.items()}

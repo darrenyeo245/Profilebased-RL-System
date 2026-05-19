@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="PYTHON_MODULE" version="4">
+<module version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.venv" />
-    </content>
-<<<<<<< HEAD:.idea/New project 2.iml
     <orderEntry type="jdk" jdkName="Python 3.13" jdkType="Python SDK" />
-=======
-    <orderEntry type="jdk" jdkName="Python 3.13 (Profilebased-RL-System)" jdkType="Python SDK" />
->>>>>>> 4eb0fb7de974e9453b988b49db5bcfaac4d6e108:.idea/Profilebased-RL-System.iml
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

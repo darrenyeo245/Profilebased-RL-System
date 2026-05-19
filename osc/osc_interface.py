@@ -295,7 +295,14 @@ class OSCInterface:
                 self._signal_sizes[address] = size
 
             if wait_for_new and not self._signal_pending.get(address, False):
-                self._lock.wait(timeout=timeout)
+                has_new_signal = self._lock.wait_for(
+                    lambda: self._signal_pending.get(address, False),
+                    timeout=timeout,
+                )
+                if not has_new_signal:
+                    raise TimeoutError(
+                        f"Timed out waiting for a new OSC signal on {address}"
+                    )
 
             values = self._signal_values[address].copy()
             self._signal_pending[address] = False
@@ -305,6 +312,12 @@ class OSCInterface:
             resized[: min(size, values.size)] = values[: min(size, values.size)]
             return resized
         return values.astype(np.float32)
+
+    def clear_signal_pending(self, address: str) -> None:
+        address = str(address)
+        with self._lock:
+            if address in self._signal_pending:
+                self._signal_pending[address] = False
 
     def send_signal(self, address: str, values: np.ndarray) -> None:
         payload = np.asarray(values, dtype=np.float32).tolist()
