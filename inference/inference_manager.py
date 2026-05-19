@@ -18,16 +18,6 @@ class InferenceManagerStatus:
     last_action: list[float] | None = None
     last_error: str | None = None
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "running": self.running,
-            "state": self.state,
-            "model_id": self.model_id,
-            "step_interval_seconds": self.step_interval_seconds,
-            "last_action": self.last_action,
-            "last_error": self.last_error,
-        }
-
 
 class InferenceManager:
     def __init__(self, system_config: SystemConfig | None = None):

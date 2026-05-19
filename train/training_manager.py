@@ -1,7 +1,6 @@
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
@@ -19,16 +18,6 @@ class TrainingManagerStatus:
     total_timesteps: int | None = None
     model_path: str | None = None
     last_error: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "running": self.running,
-            "state": self.state,
-            "algorithm": self.algorithm,
-            "total_timesteps": self.total_timesteps,
-            "model_path": self.model_path,
-            "last_error": self.last_error,
-        }
 
 
 class StopAndSaveCallback(BaseCallback):
