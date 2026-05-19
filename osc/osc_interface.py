@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import threading
+import socket
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,9 @@ class OSCInterface:
     ):
         self.rl_system = rl_system
         self.logger = self._setup_logger(enable_logging=enable_logging, log_path=log_path)
+        self._ignore_self_messages = self._parse_bool_env("IGNORE_SELF_OSC", default=True)
+        self._local_ip_addresses = self._collect_local_ip_addresses()
+
         self._lock = threading.Condition()
         self._signal_values: dict[str, np.ndarray] = {}
         self._signal_pending: dict[str, bool] = {}
@@ -86,7 +90,7 @@ class OSCInterface:
         self.dispatcher.map("/rl/stop/training", self.stop_training_handler)
         self.dispatcher.map("/rl/start/inference", self.start_inference_handler)
         self.dispatcher.map("/rl/stop/inference", self.stop_inference_handler)
-        self.dispatcher.set_default_handler(self.default_handler)
+        self.dispatcher.set_default_handler(self.default_handler, needs_reply_address=True)
 
     def start(self) -> None:
         if self.server is not None:
@@ -110,9 +114,20 @@ class OSCInterface:
         self.server_thread = None
         self._log_event("listener_stopped", "/", [RASPI_HOST, RASPI_PORT])
 
-    def default_handler(self, address: str, *args: Any) -> None:
+    def default_handler(self, client_address: tuple[str, int], address: str, *args: Any) -> None:
         args = self._strip_dispatcher_args(args)
+        if (
+            self._ignore_self_messages
+            and client_address
+            and client_address[0] in self._local_ip_addresses
+            and not address.startswith("/rl/")
+        ):
+            return
+
         self._log_event("recv", address, args)
+
+        if address in {"/rl/status/response", "/rl/error"}:
+            return
 
         try:
             setup_id = self._match_setup_address(address)
@@ -260,21 +275,9 @@ class OSCInterface:
 
     def unmapped_signal_handler(self, address: str, *args: Any) -> None:
         args = self._strip_dispatcher_args(args)
-        if not args:
-            self._log_event("recv_unmapped", address, args)
-            return
+        self._log_event("recv_unmapped_ignored", address, args)
+        return
 
-        try:
-            values = np.asarray(args, dtype=np.float32)
-        except (TypeError, ValueError):
-            self._log_event("recv_unmapped_non_numeric", address, args)
-            return
-
-        with self._lock:
-            self._signal_values[address] = values
-            self._signal_pending[address] = True
-            self._lock.notify_all()
-        self._log_event("recv_unmapped", address, values.tolist())
 
     def get_signal(
         self,
@@ -358,3 +361,28 @@ class OSCInterface:
     def _log_event(self, direction: str, address: str, payload: Any) -> None:
         if self.logger.isEnabledFor(logging.INFO):
             self.logger.info("%s | %s | %s", direction, address, list(payload))
+
+    @staticmethod
+    def _parse_bool_env(name: str, default: bool) -> bool:
+        raw = os.getenv(name)
+        if raw is None:
+            return default
+        return raw.strip().lower() not in {"0", "false", "no", "off"}
+
+    @staticmethod
+    def _collect_local_ip_addresses() -> set[str]:
+        addresses = {"127.0.0.1"}
+        try:
+            hostname = socket.gethostname()
+            addresses.update(socket.gethostbyname_ex(hostname)[2])
+        except socket.gaierror:
+            pass
+
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+                sock.connect(("8.8.8.8", 80))
+                addresses.add(sock.getsockname()[0])
+        except OSError:
+            pass
+
+        return addresses

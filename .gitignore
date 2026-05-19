@@ -10,3 +10,5 @@ mediaip_storage/
 
 train/models/
 tb_logs/
+
+.idea/
