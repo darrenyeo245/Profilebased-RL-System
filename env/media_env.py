@@ -47,8 +47,6 @@ class MediaEnv(gym.Env):
 
         self._step_count = 0
         self._last_observation = np.zeros(self.observation_space.shape, dtype=np.float32)
-        self._last_named_observations: dict[str, np.ndarray] = {}
-        self._last_named_actions: dict[str, np.ndarray] = {}
 
     def step(self, action: np.ndarray):
         action = self._normalize_action(action)
@@ -86,8 +84,6 @@ class MediaEnv(gym.Env):
             raise
 
         self._last_observation = next_observation.copy()
-        self._last_named_observations = named_observations
-        self._last_named_actions = named_actions
 
         return next_observation, float(reward), terminated, truncated, info
 
@@ -100,7 +96,6 @@ class MediaEnv(gym.Env):
 
         observation, named_observations = self._read_observation(wait_for_new=True)
         self._last_observation = observation.copy()
-        self._last_named_observations = named_observations
         self._last_named_actions = {}
 
         info = {

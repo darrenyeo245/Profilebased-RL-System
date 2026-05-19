@@ -44,11 +44,6 @@ class SystemConfig:
     runtime_paths: RuntimePaths
     inference: InferenceConfig
 
-    def ensure_runtime_dirs(self) -> None:
-        self.runtime_paths.models_dir.mkdir(parents=True, exist_ok=True)
-        self.runtime_paths.mediaip_checkout_dir.mkdir(parents=True, exist_ok=True)
-
-
 def _project_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
