@@ -7,7 +7,7 @@ from typing import Any
 @dataclass(frozen=True)
 class TrainingConfig:
     algorithm: str = "ppo"
-    total_timesteps: int = 10000
+    total_timesteps: int = 50000
     max_steps: int = 500
 
     @classmethod
@@ -15,7 +15,7 @@ class TrainingConfig:
         data = data or {}
         training = cls(
             algorithm=str(data.get("algorithm", "ppo")).lower(),
-            total_timesteps=int(data.get("total_timesteps", 10000)),
+            total_timesteps=int(data.get("total_timesteps", 50000)),
             max_steps=int(data.get("max_steps", 500)),
         )
         training.validate()

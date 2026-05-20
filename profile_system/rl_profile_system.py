@@ -216,7 +216,6 @@ class RLProfileSystem:
             self.current_pattern = pattern
             if setup is not None:
                 self.current_setup = setup
-            self.current_reward = None
             self.status = RLProfileStatus(
                 setup_id=setup_id or self.status.setup_id,
                 pattern_id=pattern.pattern_id,

@@ -129,18 +129,10 @@ class MediaIPStorageClient:
         model_file = str(manifest.get("model_file", f"model_{model_id}.zip"))
         setup_file = str(manifest.get("setup_file", f"setup_{manifest['setup_id']}.json"))
         pattern_file = str(manifest.get("pattern_file", f"pattern_{manifest['pattern_id']}.json"))
-        reward_file = str(manifest.get("reward_file", f"reward_{manifest.get('reward_id', '')}.py"))
 
         model_bytes = self.download_binary_file(self._repo_path(model_repo_dir, model_file))
         setup_text = self.download_text_file(self._repo_path(model_repo_dir, setup_file))
         pattern_text = self.download_text_file(self._repo_path(model_repo_dir, pattern_file))
-
-        reward_text = None
-        if manifest.get("reward_id"):
-            try:
-                reward_text = self.download_text_file(self._repo_path(model_repo_dir, reward_file))
-            except FileNotFoundError:
-                reward_text = None
 
         paths = self.paths
         model_dir = paths.models_dir / model_dir_name
@@ -152,8 +144,6 @@ class MediaIPStorageClient:
         manifest_path.write_text(manifest_text, encoding="utf-8")
         (model_dir / setup_file).write_text(setup_text, encoding="utf-8")
         (model_dir / pattern_file).write_text(pattern_text, encoding="utf-8")
-        if reward_text is not None:
-            (model_dir / reward_file).write_text(reward_text, encoding="utf-8")
 
         return MediaIPModelBundle(
             model_id=str(model_id),
