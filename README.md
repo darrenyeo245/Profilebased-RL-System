@@ -2,7 +2,7 @@
 
 Dieses Projekt stellt eine dynamische, profilbasierte Reinforcement-Learning-Umgebung für das MediaIP Lab bereit. Das System kann zur Laufzeit Konfigurationen laden, daraus eine Gymnasium-Umgebung erzeugen, ein PPO-Modell mit `stable-baselines3` trainieren und trainierte Modelle später für Inference (den Live-Einsatz) einsetzen.
 
-Die Kommunikation mit dem Labor erfolgt über OSC. Konfigurationsdateien, Reward-Skripte und gespeicherte Modelle liegen nicht fest im Projekt, sondern werden aus einem externen GitLab-Repository (`mediaip-storage`) geladen und dorthin gespeichert.
+Die Kommunikation mit dem Labor erfolgt über OSC. Konfigurationsdateien, Reward-Skripte und gespeicherte Modelle liegen nicht fest im Projekt, sondern werden aus einem externen GitLab-Repository (https://gitlab.iue.haw-kiel.de/mediaiplab/mediaip-storage/) geladen und dorthin gespeichert.
 
 ## Grundidee
 
