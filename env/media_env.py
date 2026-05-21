@@ -46,7 +46,6 @@ class MediaEnv(gym.Env):
         )
 
         self._step_count = 0
-        self._last_observation = np.zeros(self.observation_space.shape, dtype=np.float32)
 
     def step(self, action: np.ndarray):
         action = self._normalize_action(action)
@@ -68,12 +67,7 @@ class MediaEnv(gym.Env):
         }
 
         try:
-            reward = self.reward_function.compute(
-                self._last_observation,
-                action,
-                next_observation,
-                info,
-            )
+            reward = self.reward_function.compute(info)
         except TypeError as exc:
             if "unhashable type: 'list'" in str(exc):
                 raise TypeError(
@@ -82,8 +76,6 @@ class MediaEnv(gym.Env):
                     "or set reward_config.output to one signal name."
                 ) from exc
             raise
-
-        self._last_observation = next_observation.copy()
 
         return next_observation, float(reward), terminated, truncated, info
 
@@ -95,8 +87,6 @@ class MediaEnv(gym.Env):
         self._send_reset()
 
         observation, named_observations = self._read_observation(wait_for_new=True)
-        self._last_observation = observation.copy()
-        self._last_named_actions = {}
 
         info = {
             "observations": _to_serializable_dict(named_observations),

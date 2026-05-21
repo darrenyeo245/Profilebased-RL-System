@@ -9,7 +9,7 @@ from .pattern_config_loader import PatternConfig, PatternConfigLoader, SignalCon
 from .reward_loader import LoadedReward, RewardLoader
 from .setup_config_loader import SetupConfig, SetupConfigLoader
 
-
+"""Coordinates all the components (pattern, reward, setup) required for the profiling system and executes OSC Messages."""
 @dataclass
 class RLProfileStatus:
     setup_id: str | None = None
@@ -109,7 +109,6 @@ class RLProfileSystem:
             current_model_path = Path(model_path or self.system_config.runtime_paths.models_dir / "current_model.zip")
             manifest = self._build_manifest(
                 model_id=model_id,
-                model_path=current_model_path,
                 setup=setup,
                 pattern=pattern,
                 reward=reward,
@@ -282,10 +281,9 @@ class RLProfileSystem:
             self.inference_manager = InferenceManager(system_config=self.system_config)
         return self.inference_manager
 
+    @staticmethod
     def _build_manifest(
-        self,
         model_id: str,
-        model_path: Path,
         setup: SetupConfig,
         pattern: PatternConfig,
         reward: LoadedReward,
@@ -306,9 +304,9 @@ class RLProfileSystem:
             "reward_config": setup.reward_config,
         }
 
+    @staticmethod
     def _validate_setup_pattern_compatibility(
-        self,
-        setup: SetupConfig,
+            setup: SetupConfig,
         pattern: PatternConfig,
     ) -> None:
         if setup.pattern_id != pattern.pattern_id:

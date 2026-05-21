@@ -21,7 +21,7 @@ RASPI_PORT = int(os.getenv("RASPI_PORT", 9001))
 BROADCAST_IP = os.getenv("BROADCAST_IP", "255.255.255.255")
 BROADCAST_PORT = int(os.getenv("BROADCAST_PORT", 9001))
 
-
+"""OSC Interface to receive and send OSC Messages to the RL-Profile-System"""
 class OSCInterface:
     def __init__(
         self,
@@ -382,6 +382,7 @@ class OSCInterface:
             return default
         return raw.strip().lower() not in {"0", "false", "no", "off"}
 
+    # Collect local IP addresses to ignore self-sent OSC messages
     @staticmethod
     def _collect_local_ip_addresses() -> set[str]:
         addresses = {"127.0.0.1"}

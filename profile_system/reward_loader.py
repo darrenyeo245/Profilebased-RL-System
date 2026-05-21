@@ -5,21 +5,16 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Protocol, runtime_checkable
 
-
+"""Loads a reward python script. 
+Each reward script must define a create_reward(config) function 
+that returns an object with reset() and compute(info) methods."""
 @runtime_checkable
 class RewardFunctionProtocol(Protocol):
     def reset(self) -> None:
         ...
 
-    def compute(
-        self,
-        observation: Any,
-        action: Any,
-        next_observation: Any,
-        info: dict[str, Any],
-    ) -> float:
+    def compute(self, info: dict[str, Any]) -> float:
         ...
-
 
 @dataclass(frozen=True)
 class LoadedReward:
@@ -57,7 +52,8 @@ class RewardLoader:
             reward_function=reward_function,
         )
 
-    def _load_module(self, reward_id: str, path: Path) -> ModuleType:
+    @staticmethod
+    def _load_module(reward_id: str, path: Path) -> ModuleType:
         if not path.exists():
             raise FileNotFoundError(f"Reward module does not exist: {path}")
         if path.suffix != ".py":
@@ -72,9 +68,9 @@ class RewardLoader:
         spec.loader.exec_module(module)
         return module
 
+    @staticmethod
     def _create_reward_function(
-        self,
-        module: ModuleType,
+            module: ModuleType,
         config: dict[str, Any] | None,
     ) -> RewardFunctionProtocol:
         create_reward = getattr(module, "create_reward", None)
@@ -83,7 +79,7 @@ class RewardLoader:
 
         reward_function = create_reward(config or {})
         if not isinstance(reward_function, RewardFunctionProtocol):
-            raise TypeError("create_reward() must return an object with reset() and compute(...)")
+            raise TypeError("create_reward() must return an object with reset() and compute(info)")
 
         return reward_function
 

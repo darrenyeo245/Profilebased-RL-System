@@ -10,7 +10,7 @@ from config import SpaceLimits
 
 JsonValue = str | int | float | bool | None | dict[str, Any] | list[Any]
 
-
+"""Loads OSC pattern configurations from JSON files. Each pattern defines a set of observation and action signals,"""
 @dataclass(frozen=True)
 class SignalConfig:
     name: str
@@ -55,7 +55,6 @@ class SignalConfig:
 
     def high_values(self) -> np.ndarray:
         return _expand_bound(self.high, self.size, self.name, "high")
-
 
 @dataclass(frozen=True)
 class PatternConfig:

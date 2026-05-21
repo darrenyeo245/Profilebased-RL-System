@@ -3,7 +3,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
+"""Loads the setup configurations of a JSON file. 
+Each setup defines a training scenario by specifying a pattern, a reward function, and training parameters."""
 @dataclass(frozen=True)
 class TrainingConfig:
     algorithm: str = "ppo"
